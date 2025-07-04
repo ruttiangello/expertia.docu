@@ -23,8 +23,6 @@ Este documento ofrece una **visión detallada** del pipeline de ventas emisivas 
 - Transformaciones y agregaciones por segmento en **Silver**.
 - Consolidación y publicación de la tabla final en **Gold**.
 
-Es ideal para nuevos integrantes de BI y para auditoría interna. 🙌
-
 ---
 
 ## Arquitectura Medallion
