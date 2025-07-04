@@ -14,8 +14,6 @@
    - [6. AWT Servicios (df6)](#6-awt-servicios-df6)
 6. [Consolidación y Tipado](#consolidación-y-tipado)
 7. [Capa Gold: Escritura y Refresh](#capa-gold-escritura-y-refresh)
-8. [Buenas Prácticas y Tips](#buenas-prácticas-y-tips)
-9. [Anexo: Cheat Sheet SQL](#anexo-cheat-sheet-sql)
 
 ---
 
