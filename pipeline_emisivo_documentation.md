@@ -149,20 +149,3 @@ Consolidado2.write.mode("overwrite").saveAsTable(f"{target_catalog}.db_gold.md_t
 # 🔄 Refresca metacache
 spark.sql(f"REFRESH TABLE {target_catalog}.db_gold.md_tb_emisivo_consolidado_reporte")
 ```
-
----
-
-## Buenas Prácticas y Tips
-- Documenta cada sección detalladamente.
-- Usa LIMIT, SAMPLE, y reduce particiones en desarrollo.
-- Verifica performance con EXPLAIN y DESCRIBE HISTORY.
-- Controla permisos via Unity Catalog.
-- Orquesta el pipeline con Databricks Jobs.
-
----
-
-## Anexo: Cheat Sheet SQL
-- SELECT, JOIN, GROUP BY, WINDOW Functions
-- CTAS, CTE, MERGE, OPTIMIZE, VACUUM, CACHE
-
-> **Esta guía es tu referencia para mantener y escalar el pipeline emisivo de Expertia.** 🎉
