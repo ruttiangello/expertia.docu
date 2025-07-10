@@ -1,6 +1,29 @@
 # 📘 Documentación | db_gold.md_tb_emisivo_consolidado_reporte
 ## LÓGICA EN EL WORKSPACE: 19_proceso_base_dashboard_consolidado_emisivo_py
 Tabla que en teoría al ser db_gold debe ser la tabla final a conectar a reportes - dashboards
+
+## Definición de Campos de Monto 💰  
+**`db_gold.md_tb_emisivo_consolidado_reporte`**  
+
+| Campo          | Descripción                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| **VentaNeta**  | 🔖 Suma de las tarifas netas de todos los boletos/servicios, sin incluir impuestos ni tasas.             |
+| **VentaFull**  | 🧾 Suma de las tarifas completas (tarifa + impuestos + tasas) de todos los boletos/servicios.             |
+| **Q_tkts**     | 🎫 Conteo total de tickets emitidos (distintos) dentro del período.                                       |
+| **Q_files**    | 📂 Conteo total de archivos o PNRs procesados (distintos) en ese mismo período.                           |
+| **Fee**        | 💵 Total de comisiones (fees) cobradas sobre las transacciones (agencia, emisión, etc.).                  |
+| **Descuento**  | 🔻 Total de descuentos aplicados sobre las ventas.                                                         |
+| **Com_Std**    | 🏷️ Total de comisiones estándar pagadas a canales o vendedores.                                           |
+| **Com_Over**   | ➕ Total de comisiones “over” (cuando la comisión real supera la estándar).                                 |
+| **Aux**        | 🛠️ Cargos auxiliares agregados (tasas administrativas, cargos por emisión, etc.).                         |
+| **Proy_BE**    | 📊 Proyección de “business expenses” sobre la venta, según factor BE definido en reglas de negocio.       |
+| **Proy_Seg**   | ✈️ Proyección de ingresos o costos por segmento de ruta, basada en el número de tramos de cada vuelo.    |
+| **Proy_Uti**   | 💡 Utilidad proyectada: combinación de comisiones, fees, BE y SEG, menos descuentos.                      |
+| **Costo_os**   | ⚙️ Costo operativo de servicio asociado (p. ej. cargos internos de back‐office).                          |
+
+> 🔍 **Nota:**  
+> - Estos montos consolidados ya incluyen todas las transformaciones y uniones de Silver en un único repositorio Gold.
+
 ## Tabla de Contenidos
 1. [Introducción](#introducción)
 2. [Arquitectura Medallion](#arquitectura-medallion)
