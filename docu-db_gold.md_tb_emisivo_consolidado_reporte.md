@@ -1,4 +1,4 @@
-# 📘 Documentación | Global + db_gold.md_tb_emisivo_consolidado_reporte
+# 📘 Documentación | db_gold.md_tb_emisivo_consolidado_reporte
 
 ## Tabla de Contenidos
 1. [Introducción](#introducción)
