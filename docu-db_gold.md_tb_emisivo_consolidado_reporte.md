@@ -1,6 +1,6 @@
 # 📘 Documentación | db_gold.md_tb_emisivo_consolidado_reporte
 ## LÓGICA EN EL WORKSPACE: 19_proceso_base_dashboard_consolidado_emisivo_py
-Tabla que en teoría al ser db_gold debe ser la tabla final a conectar a reportes - dashboards
+Tabla db_gold - tabla final a conectar a reportes - dashboards
 
 ## Definición de Campos de Monto 💰  
 **`db_gold.md_tb_emisivo_consolidado_reporte`**  
