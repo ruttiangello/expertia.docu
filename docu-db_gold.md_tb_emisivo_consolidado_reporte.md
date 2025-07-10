@@ -1,5 +1,6 @@
 # 📘 Documentación | db_gold.md_tb_emisivo_consolidado_reporte
-
+## LÓGICA EN EL WORKSPACE: 19_proceso_base_dashboard_consolidado_emisivo_py
+Esta es la tabla que en teoría al ser db_gold debe ser la tabla a usar para conectar a reportes
 ## Tabla de Contenidos
 1. [Introducción](#introducción)
 2. [Arquitectura Medallion](#arquitectura-medallion)
