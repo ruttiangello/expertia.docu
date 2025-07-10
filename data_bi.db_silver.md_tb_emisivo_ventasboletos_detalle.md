@@ -1,4 +1,18 @@
 # 📘 Documentación: `md_tb_emisivo_ventasboletos_detalle`
+## LÓGICA EN EL WORKSPACE: 02_reglas_de_negocio_vista_boletos_excel_emitidos_sql
+**Descripción General**  
+Esta tabla Silver consolida **todas las transacciones** de venta de boletos aéreos (tickets) y servicios de asistencia (Journey Assist / TA) a nivel global, incluyendo:
+- **OTAs** (Online Travel Agencies)  
+- **Ventas de seguros y asistencia en viaje**  
+
+Aquí encontrarás métricas clave como:
+- Montos de venta neta y bruta  
+- Cantidad de tickets y archivos  
+- Comisiones, fees y proyecciones de utilidad  
+- Detalle de rutas (OW/RT, segmentos, O-D)  
+
+**Propósito**  
+Facilitar el análisis y reporte de emisivo en Expertia Travel, unificando datos de múltiples orígenes (Bronze, Silver y catálogos maestros) en un único punto para Power BI y otros consumos de BI.
 
 ---
 
