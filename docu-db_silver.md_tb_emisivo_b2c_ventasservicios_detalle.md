@@ -26,42 +26,77 @@ Toda la transformación y reglas están en el notebook SQL:  03_reglas_de_negoci
 
 ---
 
-## 📝 Resumen de Secciones
+## 📝 Resumen de Secciones (detalle ampliado)
 
 1. **Inicialización & Parámetros**  
-   - Carga de `global_parameter_py`, utilitarios de ingeniería  
-   - Configura cache I/O, particiones automáticas y base Bronze  
-   - Widgets para `range_start`, `range_end`, `reprocess_range`
+   - **Carga de utilitarios** (`global_parameter_py`, `00_util_ingenieria_py`)  
+   - **Configuración Spark**  
+     - `cache.enabled = True` para acelerar lecturas  
+     - `shuffle.partitions = auto` para optimización de shuffles  
+     - `USE {target_catalog}.db_bronze` ⇒ esquema Bronze por defecto  
+   - **Widgets de fecha**  
+     - `range_start`, `range_end` y `reprocess_range`  
+     - Lógica de defaults: si no hay widget, usa “hoy” y retrocede `reprocess_range` días (por defecto 65)  
+     - Guarda `parameters.range_start/end` en `spark.conf`
 
 2. **Lectura y Ajuste de Clasificación**  
-   - Lee `VW_UP_SEL_ANALISIS_VENTAS` desde Bronze  
-   - Sobrepone `clasificacion = 'UTILIDAD SERVICIOS'` para nombre_grupo específico
+   - Lee la vista base **`VW_UP_SEL_ANALISIS_VENTAS`** (raw de ventas srv)  
+   - Sobrepone `clasificacion = 'UTILIDAD SERVICIOS'` cuando `nombre_grupo` contiene “INGRESO ADICIONAL X SERVICIOS”
 
-3. **Vista Previa (`VW_UP_SEL_AV_VENTAS_pre`)**  
-   - Selecciona y normaliza campos de factura, cliente, monto (gravado, igv, inafecto, descuento…)  
-   - Calcula `venta_total`, `venta_total_usd`, `costo_total_usd`, `utilidad_total` y métricas de utilidad  
-   - Asigna unidad de negocio (`UN`), canal (`CC`), sub-UN y demás flags de negocio  
-   - Enriquecimientos con catálogos (`listaUnCC`, `FECHAS`)
+3. **Construcción de `VW_UP_SEL_AV_VENTAS_pre`**  
+   - **Selección y normalización** de campos clave:  
+     - Fechas (`to_date(fecha_emision)`), facturación, cliente, punto de emisión, subcódigos…  
+   - **Montos y conversiones**:  
+     - `venta_total` = suma de `gravado + igv + inafecto + no_gravado + srv_recargo_consumo`  
+     - `venta_total_usd`, `costo_total_usd` según `tipo_de_cambio`  
+     - `utilidad_total` = `venta_total_usd – costo_total_usd`  
+     - `utilidad_neta_usd` = `utilidad_total ÷ 1.18`  
+   - **Cálculo de utilidades parciales**:  
+     - `uti_fee_comisiones`  (fees + comisiones)  
+     - `uti_servicios_usd`   (solo para órdenes de servicio >1)  
+     - `uti_neta_total_fee_svs` = suma de ambas  
+   - **Asignación de canales y unidades de negocio**:  
+     - JOIN con `file_listas_av_semanal_listaUnYCcs` para obtener `UN` y `CC` por cliente  
+     - Casos especiales (WhatsApp Web → Web, directos → Retail, “CUENTAS COMERCIALES” → Corporate / Mice…)  
+   - **Enriquecimiento temporal**:  
+     - JOIN a calendario `FECHAS` ⇒ `num_semana_calendario`, `rango_semana_calendario`, `num_semanal`, `rango_semanal`  
+     - `segmentacion_cliente` desde tabla de segmentación externa
 
-4. **Vista Limpia (`VW_UP_SEL_AV_VENTAS`)**  
-   - Refina `como_se_entero_descrip` a títulos estandarizados (CHAT, CITA VIRTUAL…)  
-   - Limpia duplicados de canales de entrada  
-   - Mantiene solo los campos finales de análisis
+4. **Transformación final `VW_UP_SEL_AV_VENTAS`**  
+   - Refina `como_se_entero_descrip2` para unificar etiquetas de contacto (CHAT, CITA VIRTUAL, LLAMADA TELEFONICA…)  
+   - Ajusta casos especiales de “CONTACT CENTER” y presencia de “Web”  
+   - Conserva únicamente los campos necesarios para el análisis
 
 5. **Detección de Anomalías Semanales**  
-   - **`venta_av_semanal`**: agrupa ventas negativas (`venta_neta_usd`) por `id_file`  
-   - **`uti_av_semanal`**: agrupa utilidades netas negativas (`uti_neta_total_fee_svs`)  
+   - **`venta_av_semanal`**  
+     - Agrupa por `id_file` las ventas (`venta_neta`, `venta_total`, `venta_neta_usd`)  
+     - Filtra solo las que tienen sumatorio USD < 0 ⇒ valores negativos inusuales  
+   - **`uti_av_semanal`**  
+     - Agrupa por `id_file` las utilidades (`uti_neta_total_fee_svs`, `uti_servicios_usd`, `utilidad_neta_usd`, `uti_fee_comisiones`)  
+     - Filtra sumas negativas para corregir errores de cálculo
 
-6. **Pre-Final (`VW_md_tb_emisivo_b2c_ventasservicios_detalle_pre`)**  
-   - Coalesce: si hay anomalía negativa, reemplaza los montos originales por los valores ajustados de `venta_av_semanal` y `uti_av_semanal`
+6. **Pre-​final: `VW_md_tb_emisivo_b2c_ventasservicios_detalle_pre`**  
+   - Toma los registros de `VW_UP_SEL_AV_VENTAS_pre`  
+   - **COALESCE** entre valores originales y valores “venta_av_semanal” o “uti_av_semanal”  
+     - Reemplaza sólo los que arrojaron anomalías negativas  
+   - Resultado: montos “limpios” listos para reglas de negocio finales
 
-7. **Final (`VW_md_tb_emisivo_b2c_ventasservicios_detalle`)**  
-   - Agrega lógica de negocio específica de Retail, Web y Corporate:  
-     - Determina `negocio`, `evento`, `equipo`, `sub_un` según `UN` y reglas de puntos de venta  
-   - Une con catálogo `TipoClientes_Corpo` para Corporate
+7. **Aplicación de Reglas de Negocio Finales**  
+   - Vista **`VW_md_tb_emisivo_b2c_ventasservicios_detalle`**:  
+     - **Determina `negocio`** (Retail, Web, Corporate) con lógica por `UN`, cliente y `como_se_entero_descrip`  
+     - **Clasifica `evento`** (SIT, CIERRA PUERTA, NORMAL) según subcódigo y canal  
+     - **Asigna `equipo`** (CHAT vs recuperación vs MOTOR SVS vs etc.) según fecha y vendedor  
+     - **Define `sub_un`** para Corporate / Mice vs resto  
+     - JOIN con `TipoClientes_Corpo` para Corporate y `file_maestro_asesor_b2c` para Retail
 
 8. **Carga Incremental**  
-   - Invoca `create_insert_incremental_table('VW_md_tb_emisivo_b2c_ventasservicios_detalle', 'fecha_emision', ...)`  
-   - Procesa solo el rango de fechas definido en los widgets  
-
+   - Llamada a  
+     ```python
+     create_insert_incremental_table(
+       'VW_md_tb_emisivo_b2c_ventasservicios_detalle',
+       'fecha_emision',
+       range_start, range_end, 'db_silver'
+     )
+     ```  
+   - Solo procesa el rango de fechas definido en los widgets, optimizando tiempo y recursos.
 ---
