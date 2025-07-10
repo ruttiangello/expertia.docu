@@ -14,6 +14,30 @@ Aquí encontrarás métricas clave como:
 **Propósito**  
 Facilitar el análisis y reporte de emisivo en Expertia Travel, unificando datos de múltiples orígenes (Bronze, Silver y catálogos maestros) en un único punto para Power BI y otros consumos de BI.
 
+## Definición de Campos de Monto 💰
+
+A continuación, una breve descripción de cada uno de los campos numéricos de **montos** en `md_tb_emisivo_ventasboletos_detalle`:
+
+| Campo          | Descripción                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| **VentaNeta**  | 🔖 Importe neto de la venta (solo tarifa), sin impuestos ni tasas.                                        |
+| **VentaFull**  | 🧾 Importe bruto de la venta (tarifa + impuestos + tasas).                                                 |
+| **Fee**        | 💵 Suma de comisiones cobradas sobre la venta (por ejemplo, fees de agencia).                             |
+| **Descuento**  | 🔻 Monto total de descuentos aplicados al boleto o servicio.                                               |
+| **Com_Std**    | 🏷️ Comisión estándar pagada al vendedor o canal (antes de overs).                                         |
+| **Com_Over**   | ➕ Comisión “over” adicional (cuando la comisión real supera la estándar).                                 |
+| **Aux**        | 🛠️ Cargos auxiliares (p. ej. tasas administrativas o cargos de emisión).                                   |
+| **Proy_BE**    | 📊 Proyección de “business expenses” (factores de costo base proyectados sobre la tarifa).                |
+| **Proy_Seg**   | ✈️ Proyección de ingresos o costos por segmento de la ruta (basado en número de tramos).                 |
+| **Proy_Uti**   | 💡 Utilidad proyectada: suma de comisiones, fees y proyecciones (BE + SEG) menos descuentos.              |
+| **Costo_os**   | ⚙️ Costo de operaciones de servicio (p. ej. cargo interno por procesar la transacción).                  |
+
+> 🔍 **Nota:**  
+> - Todos los campos de “Proy_…” son cálculos internos destinados a modelar rentabilidad futura según reglas de negocio.  
+> - La lógica completa de cómo se calculan estos montos está en el notebook SQL  
+>   `02_reglas_de_negocio_vista_boletos_excel_emitidos_sql`.  
+
+
 ---
 
 ## 📑 Tabla de Contenido
