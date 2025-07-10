@@ -1,4 +1,4 @@
-# 📘 Documentación: `md_tb_emisivo_ventasboletos_detalle`
+# 📘 Documentación | `md_tb_emisivo_ventasboletos_detalle`
 ## LÓGICA EN EL WORKSPACE: 02_reglas_de_negocio_vista_boletos_excel_emitidos_sql
 **Descripción General**  
 Esta tabla Silver consolida **todas las transacciones** de venta de boletos aéreos (tickets) y servicios de asistencia (Journey Assist / TA) a nivel global, incluyendo:
